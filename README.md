@@ -2,7 +2,7 @@
 A Python class for easy binary data handling.
 
 
-```
+```python
 from BinaryFile import BinaryFile
 
 
