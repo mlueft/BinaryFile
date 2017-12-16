@@ -13,7 +13,7 @@ class BinaryFile:
         self.file = None
         self.bigEndian = False
        
-        if fileName <> None:
+        if fileName != None:
             self.open( fileName, mode )
             
     ## 
@@ -57,13 +57,16 @@ class BinaryFile:
     #  @param   data    Integer to be converted to a list of characters
     #  @param   length  The size of the returned list.
     #  
-    def __getBytes( self, data, length = 1 ):
+    def __getBytes( self, data, length = 1, bigEndian = -1 ):
         result = []
        
         for i in range(0,length):
             result.append( (data>>i*8)&255 )
        
-        if self.bigEndian:
+        if bigEndian == -1:
+            bigEndian = self.bigEndian
+        
+        if bigEndian:
             result.reverse()
            
         return result
@@ -74,12 +77,15 @@ class BinaryFile:
     #
     #  @param   data    A string returned by file.read.
     #
-    def __getInt(self, data):
+    def __getInt(self, data, bigEndian = -1):
         length = len(data)
    
+        if bigEndian == -1:
+            bigEndian = self.bigEndian
+        
         result = 0
         for i in range(0,length):
-            if self.bigEndian:
+            if bigEndian:
                 result = result << i*8 | ord(data[i])
             else:
                 result = ord(data[i]) << i*8 | result
@@ -96,32 +102,52 @@ class BinaryFile:
             
     ## Writes a 8 bit integer at the current position.
     #  
-    def writeInt8(self, data):
-        bytes = self.__getBytes(data,1)
+    def writeInt8(self, data, bigEndian = -1):
+        bytes = self.__getBytes(data,1,bigEndian)
         self.__writeBytes(bytes)
         
     ## Writes a 16 bit integer at the current position.
     #  
-    def writeInt16(self, data):
-        bytes = self.__getBytes(data,2)
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for writeign multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def writeInt16(self, data, bigEndian = -1):
+        bytes = self.__getBytes(data,2,bigEndian)
         self.__writeBytes(bytes)
         
     ## Writes a 24 bit integer at the current position.
     #  
-    def writeInt24(self, data):
-        bytes = self.__getBytes(data,3)
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for writeign multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def writeInt24(self, data, bigEndian = -1):
+        bytes = self.__getBytes(data,3,bigEndian)
         self.__writeBytes(bytes)
         
     ## Writes a 32 bit integer at the current position.
     #  
-    def writeInt32(self, data):
-        bytes = self.__getBytes(data,4)
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for writeign multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def writeInt32(self, data, bigEndian = -1):
+        bytes = self.__getBytes(data,4,bigEndian)
         self.__writeBytes(bytes)
         
     ## Writes a 64 bit integer at the current position.
     #  
-    def writeInt64(self, data):
-        bytes = self.__getBytes(data,8)
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for writeign multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def writeInt64(self, data, bigEndian = -1):
+        bytes = self.__getBytes(data,8,bigEndian)
         self.__writeBytes(bytes)
         
     ## Reads a 8 bit integer value at the current position.
@@ -132,27 +158,47 @@ class BinaryFile:
         
     ## Reads a 16 bit integer value at the current position.
     #  
-    def readInt16(self):
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for reading multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def readInt16(self, bigEndian = -1):
         data = self.file.read(2)
-        return self.__getInt(data)
+        return self.__getInt(data,bigEndian)
         
     ## Reads a 24 bit integer value at the current position.
     #  
-    def readInt24(self):
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for reading multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def readInt24(self, bigEndian = -1):
         data = self.file.read(3)
-        return self.__getInt(data)
+        return self.__getInt(data,bigEndian)
         
     ## Reads a 32 bit integer value at the current position.
     #  
-    def readInt32(self):
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for reading multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def readInt32(self, bigEndian = -1):
         data = self.file.read(4)
-        return self.__getInt(data)
+        return self.__getInt(data,bigEndian)
         
     ## Reads a 64 bit integer value at the current position.
     #  
-    def readInt64(self):
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for reading multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def readInt64(self, bigEndian = -1):
         data = self.file.read(8)
-        return self.__getInt(data)
+        return self.__getInt(data,bigEndian)
         
     ## Peeks a 8 bit integer value at the current position.
     #  
@@ -164,32 +210,52 @@ class BinaryFile:
         
     ## Peeks a 16 bit integer value at the current position.
     #  
-    def peekInt16(self):
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for reading multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def peekInt16(self, bigEndian = -1):
         pos = self.tell()
-        result = self.readInt16()
+        result = self.readInt16(bigEndian)
         self.seek(pos)
         return result
         
     ## Peeks a 24 bit integer value at the current position.
     #  
-    def peekInt24(self):
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for reading multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def peekInt24(self, bigEndian = -1):
         pos = self.tell()
-        result = self.readInt24()
+        result = self.readInt24(bigEndian)
         self.seek(pos)
         return result
         
     ## Peeks a 32 bit integer value at the current position.
     #  
-    def peekInt32(self):
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for reading multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def peekInt32(self, bigEndian = -1):
         pos = self.tell()
-        result = self.readInt32()
+        result = self.readInt32(bigEndian)
         self.seek(pos)
         return result
         
     ## Peeks a 64 bit integer value at the current position.
     #  
-    def peekInt64(self):
+    #  @param   bigEndian   Controls what byteOrder to use
+    #                       for reading multi byte integer
+    #                       default: -1 => uses the settings from
+    #                                      bigEndian class setting
+    #
+    def peekInt64(self, bigEndian = -1):
         pos = self.tell()
-        result = self.readInt64()
+        result = self.readInt64(bigEndian)
         self.seek(pos)
         return result

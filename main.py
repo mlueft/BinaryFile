@@ -1,8 +1,4 @@
-# BinaryFile
-A Python class for easy binary data handling.
 
-
-```python
 from BinaryFile import BinaryFile
 
 
@@ -23,10 +19,9 @@ print f.peekInt16()
 print f.peekInt16()
 print f.peekInt16()
 
-print f.readInt8()
-print f.readInt8()
+print f.readInt8() 
+print f.readInt8() 
 
  
 
 f.close()
-```
