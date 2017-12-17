@@ -102,8 +102,8 @@ class BinaryFile:
             
     ## Writes a 8 bit integer at the current position.
     #  
-    def writeInt8(self, data, bigEndian = -1):
-        bytes = self.__getBytes(data,1,bigEndian)
+    def writeInt8(self, data):
+        bytes = self.__getBytes(data,1)
         self.__writeBytes(bytes)
         
     ## Writes a 16 bit integer at the current position.
@@ -149,6 +149,11 @@ class BinaryFile:
     def writeInt64(self, data, bigEndian = -1):
         bytes = self.__getBytes(data,8,bigEndian)
         self.__writeBytes(bytes)
+        
+    ## Writes a char at the current position.
+    #  
+    def writeChar(self, data):
+        self.file.write(data)
         
     ## Reads a 8 bit integer value at the current position.
     #  
@@ -199,6 +204,11 @@ class BinaryFile:
     def readInt64(self, bigEndian = -1):
         data = self.file.read(8)
         return self.__getInt(data,bigEndian)
+      
+    ## Reads a char value at the current position.
+    #  
+    def readChar(self):
+        return self.file.read(1)
         
     ## Peeks a 8 bit integer value at the current position.
     #  
@@ -257,5 +267,13 @@ class BinaryFile:
     def peekInt64(self, bigEndian = -1):
         pos = self.tell()
         result = self.readInt64(bigEndian)
+        self.seek(pos)
+        return result
+        
+    ## Peeks a charactor value at the current position.
+    #  
+    def peekChar(self):
+        pos = self.tell()
+        result = self.readChar()
         self.seek(pos)
         return result
